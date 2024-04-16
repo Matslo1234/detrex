@@ -1,0 +1,1 @@
+fair 1 class: python tools/train_net.py --config-file projects/dino/configs/dino-resnet/dino_r50_4scale_12ep_300dn_dummy_fair_1class.py train.amp.enabled=False

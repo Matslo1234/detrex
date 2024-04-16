@@ -75,10 +75,19 @@ def get_uxo_dicts(img_dir):
 
     return labels
 
+def register_uxo_11(img_dir, dataset_prefix, classes):
+    for img_type in ["train", "valid", "test"]:
+        dataset_name = dataset_prefix + img_type
+        DatasetCatalog.register(dataset_name,
+                                lambda x=img_type: get_uxo_dicts(os.path.join(img_dir, x, "images")))
+        MetadataCatalog.get(dataset_name).set(thing_classes=classes)
 
-_root = os.path.join(os.getenv("DETECTRON2_DATASETS", "/home/m/datasets"), "Novi11")
-for img_type in ["train", "valid", "test"]:
-    dataset_name = "uxo_11_" + img_type
-    DatasetCatalog.register(dataset_name,
-                            lambda img_type=img_type: get_uxo_dicts(os.path.join(_root, img_type, "images")))
-    MetadataCatalog.get(dataset_name).set(thing_classes=["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"])
+
+register_uxo_11(os.path.join(os.getenv("DETECTRON2_DATASETS", "/home/m/datasets"), "Novi11"), "uxo_11_", ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"])
+register_uxo_11(os.path.join(os.getenv("DETECTRON2_DATASETS", "/home/m/datasets"), "Novi11Resized"), "uxo_11_resized_", ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"])
+register_uxo_11(os.path.join(os.getenv("DETECTRON2_DATASETS", "/home/m/datasets"), "Novi11Fair"), "uxo_11_fair_", ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"])
+register_uxo_11(os.path.join(os.getenv("DETECTRON2_DATASETS", "/home/m/datasets"), "Novi11Fair1Class"), "uxo_11_fair_1class_", ["0"])
+register_uxo_11(os.path.join(os.getenv("DETECTRON2_DATASETS", "/home/m/datasets"), "Novi11CroppedFair1Class"), "uxo_11_fair_cropped_1class_", ["0"])
+register_uxo_11(os.path.join(os.getenv("DETECTRON2_DATASETS", "/home/m/datasets"), "Novi11OneChannel"), "uxo_11_1channel_", ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"])
+register_uxo_11(os.path.join(os.getenv("DETECTRON2_DATASETS", "/home/m/datasets"), "Novi11OneChannelFair1Class"), "uxo_11_1channel_fair_", ["0"])
+register_uxo_11(os.path.join(os.getenv("DETECTRON2_DATASETS", "/home/m/datasets"), "Novi11Fair2561Class1Channel"), "uxo_11_cropped_256_1class_", ["0"])

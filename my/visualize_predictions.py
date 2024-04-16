@@ -9,6 +9,7 @@ from detectron2.structures import BoxMode
 
 # import some common libraries
 import os, json, cv2, random
+import numpy as np
 
 # import some common detectron2 utilities
 from detectron2 import model_zoo
@@ -44,9 +45,26 @@ def visualize_predictions(dataset_name: str, cfg_path: str, model_path: str):
     image_dir = os.path.join(model_root, "predictions")
     os.makedirs(image_dir, exist_ok=True)
 
+    bbox_predictions = []
+
     for entry in dataset_dicts:
         path = entry["file_name"]
-        img = cv2.imread(path)
-        predictions, visualized_output = demo.run_on_image(img, 0.7)
-        cv2.imwrite(os.path.join(image_dir, path.split("/")[-1]),
-                    visualized_output.get_image()[:, :, ::-1])
+        img = np.expand_dims(cv2.imread(path, cv2.IMREAD_GRAYSCALE), -1)
+        predictions, visualized_output = demo.run_on_image(img, 0.1)
+        cv2.imwrite(os.path.join(image_dir, path.split("/")[-1]), visualized_output.get_image()[:, :, ::-1])
+        pred_bboxes = predictions["instances"]._fields["pred_boxes"].tensor.tolist()
+        pred_scores = predictions["instances"]._fields["scores"].tolist()
+        pred_classes = predictions["instances"]._fields["pred_classes"].tolist()
+        parsed_predictions = []
+        for i in range(len(pred_bboxes)):
+            parsed_prediction = pred_bboxes[i]
+            parsed_prediction.append(pred_scores[i])
+            parsed_prediction.append(pred_classes[i])
+            parsed_predictions.append(parsed_prediction)
+        bbox_predictions.append({
+            "image": os.path.join(image_dir, path),
+            "predictions": parsed_predictions
+        })
+
+    with open(os.path.join(image_dir, "predictions.json"), "w") as f:
+        json.dump(bbox_predictions, f)

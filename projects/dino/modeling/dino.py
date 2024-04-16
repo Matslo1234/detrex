@@ -109,8 +109,15 @@ class DINO(nn.Module):
 
         # normalizer for input raw images
         self.device = device
-        pixel_mean = torch.Tensor(pixel_mean).to(self.device).view(3, 1, 1)
-        pixel_std = torch.Tensor(pixel_std).to(self.device).view(3, 1, 1)
+
+        if len(pixel_mean) == 1:
+            # for 1 channel images:
+            pixel_mean = torch.Tensor(pixel_mean).to(self.device).view(1)
+            pixel_std = torch.Tensor(pixel_std).to(self.device).view(1)
+        else:
+            pixel_mean = torch.Tensor(pixel_mean).to(self.device).view(3, 1, 1)
+            pixel_std = torch.Tensor(pixel_std).to(self.device).view(3, 1, 1)
+
         self.normalizer = lambda x: (x - pixel_mean) / pixel_std
 
         # initialize weights

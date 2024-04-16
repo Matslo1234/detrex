@@ -100,7 +100,7 @@ class DetrDatasetMapper:
         # Pytorch's dataloader is efficient on torch.Tensor due to shared-memory,
         # but not efficient on large generic data structures due to the use of pickle & mp.Queue.
         # Therefore it's important to use torch.Tensor.
-        dataset_dict["image"] = torch.as_tensor(np.ascontiguousarray(image.transpose(2, 0, 1)))
+        dataset_dict["image"] = torch.as_tensor(np.ascontiguousarray(np.array(image.transpose(2, 0, 1))))
 
         if not self.is_train:
             # USER: Modify this if you want to keep them for some reason.
